@@ -54,6 +54,17 @@ class VideogameService {
 
     return data.rows;
   }
+
+  async getFirstFifteenVideogamesByName(name) {
+    const query = `SELECT * FROM videogames
+                  INNER JOIN videogames_genres ON videogames.id = videogames_genres.videogame_id
+                  INNET JOIN genres ON videogames_genres.genre_id = genre.id
+                  WHERE videogames.name LIKE %$name%
+                  LIMIT 15`;
+    const data = await this.pool.query(query, name);
+
+    return data.rows;
+  }
 }
 
 module.exports = VideogameService;
