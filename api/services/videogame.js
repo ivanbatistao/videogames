@@ -67,6 +67,18 @@ class VideogameService {
 
     return data.rows;
   }
+
+  async getVideogameById(id) {
+    const query = `SELECT * FROM videogames
+                  INNER JOIN videogames_genres ON videogames.id = videogames_genres.videogame_id
+                  INNET JOIN genres ON videogames_genres.genre_id = genre.id
+                  INNER JOIN videogames_platforms ON videogames_platforms.videogame_id = videogames.id
+                  INNER JOIN platforms ON videogames_platforms.platform_id = platforms.id
+                  WHERE videogames.id = $id`;
+    const data = await this.pool.query(query, id);
+
+    return data;
+  }
 }
 
 module.exports = VideogameService;
