@@ -44,6 +44,16 @@ class VideogameService {
       console.error(error);
     }
   }
+
+  async getFirstFifteenVideogames() {
+    const query = `SELECT * FROM videogames
+                  INNER JOIN videogames_genres ON videogames.id = videogames_genres.videogame_id
+                  INNET JOIN genres ON videogames_genres.genre_id = genre.id
+                  LIMIT 15`;
+    const data = await this.pool.query(query);
+
+    return data.rows;
+  }
 }
 
 module.exports = VideogameService;
