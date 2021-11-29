@@ -1,0 +1,49 @@
+const pool = require('../libs/postgres.pool');
+const config = require('../config/config');
+
+class VideogameService {
+  constructor() {
+    this.populateDatabse();
+    this.pool = pool;
+    this.pool.on('error', (err) => {
+      console.error(err);
+    });
+  }
+
+  async populateDatabse() {
+    try {
+      const query = 'SELECT * FROM videogames';
+      const data = await this.pool.query(query);
+
+      let listOfPromises = [];
+      let allPromises = Promise.all(listOfPromises);
+
+      if (!data) {
+        for (let i = 0; i < 78; i++) {
+          listOfPromises.push(
+            fetch(
+              `https://api.rawg.io/api/games?key=${config.apiKey}&page=${i + 1}`
+            )
+          );
+        }
+      }
+
+      const allData = await allPromises;
+      await allData.map((data) => {
+        const dataJSON = await data.json();
+        const query =
+          'INSERT INTO videogames(id, name, description, release_date, rating) VALUES($1, $2, $3, $4, $5)';
+        await this.pool.query(query, [
+          dataJSON.results.id,
+          dataJSON.results.name,
+          dataJSON.results.released,
+          dataJSON.results.rating,
+        ]);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
+module.exports = VideogameService;
