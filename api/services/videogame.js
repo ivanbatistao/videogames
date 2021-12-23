@@ -27,8 +27,7 @@ class VideogameService {
         }
       }
 
-      let allPromises = Promise.all(listOfPromises); // This was moved from line 19 to here (commit changes)
-      // Also added image to query and
+      let allPromises = Promise.all(listOfPromises);
 
       const allData = await allPromises;
       await allData.map((data) => {
