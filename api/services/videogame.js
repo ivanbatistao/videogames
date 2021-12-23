@@ -16,7 +16,6 @@ class VideogameService {
       const data = await this.pool.query(query);
 
       let listOfPromises = [];
-      let allPromises = Promise.all(listOfPromises);
 
       if (!data) {
         for (let i = 0; i < 78; i++) {
@@ -28,16 +27,21 @@ class VideogameService {
         }
       }
 
+      let allPromises = Promise.all(listOfPromises); // This was moved from line 19 to here (commit changes)
+      // Also added image to query and
+
       const allData = await allPromises;
       await allData.map((data) => {
         const dataJSON = await data.json();
         const query =
-          'INSERT INTO videogames(id, name, description, release_date, rating) VALUES($1, $2, $3, $4, $5)';
+          'INSERT INTO videogames(id, name, image, description, rating, release_date) VALUES($1, $2, $3, $4, $5, $6)';
         await this.pool.query(query, [
           dataJSON.results.id,
           dataJSON.results.name,
-          dataJSON.results.released,
+          dataJSON.results.background_image,
+          dataJSON.results.description,
           dataJSON.results.rating,
+          dataJSON.results.released,
         ]);
       });
     } catch (error) {
